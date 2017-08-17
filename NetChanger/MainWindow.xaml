@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:NetChanger"
         mc:Ignorable="d"
         Title="Network switch" Height="140" Width="180">
-    <Grid>
+    <!--<Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="0.25*"></RowDefinition>
             <RowDefinition Height="0.25*"></RowDefinition>
@@ -17,10 +17,27 @@
             <ColumnDefinition Width="0.5*"></ColumnDefinition>
             <ColumnDefinition Width="0.5*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <Label x:Name="label1" Grid.Row="0" Grid.ColumnSpan="2" Margin="0,0,0,5"/>
-        <Label x:Name="label2" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,0,0,5"/>
-        <Label x:Name="label3" Grid.Row="2" Grid.ColumnSpan="2" Margin="0,0,0,5"/>
-        <Button Grid.Row="3" Grid.Column="0" x:Name="button" HorizontalAlignment="Center" Content="PFR" Width="75" Height="20" Click="button_Click"/>
-        <Button Grid.Row="3" Grid.Column="1" x:Name="button1" HorizontalAlignment="Center" Content="Yota" Width="75" Height="20" Click="button1_Click"/>
-    </Grid>
+        <Label x:Name="label1" Grid.Row="0" Grid.ColumnSpan="2" Margin="0,0,0,5" />
+        <Label x:Name="label2" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,0,0,5" />
+        <Label x:Name="label3" Grid.Row="2" Grid.ColumnSpan="2" Margin="0,0,0,5" />
+        <Button Grid.Row="3" Grid.Column="0" x:Name="button" HorizontalAlignment="Center" Content="PFR" Width="75" Height="20" Click="button_Click" />
+        <Button Grid.Row="3" Grid.Column="1" x:Name="button1" HorizontalAlignment="Center" Content="Yota" Width="75" Height="20" Click="button1_Click" />
+    </Grid>-->
+    <DockPanel>
+        <UniformGrid Rows="1" Columns="2" DockPanel.Dock="Bottom">
+            <Button Margin="5" Content="Work" />
+            <Button Margin="5" Content="Rest" />
+        </UniformGrid>
+        <UniformGrid Rows="3" Columns="1">
+            <Border BorderThickness="1" BorderBrush="Black" Margin="5">
+                <TextBlock Text="IP" />
+            </Border>
+            <Border BorderThickness="1" BorderBrush="Black" Margin="5">
+                <TextBlock Text="Mask" />
+            </Border>
+            <Border BorderThickness="1" BorderBrush="Black" Margin="5">
+                <TextBlock Text="Broadcast" />
+            </Border>
+        </UniformGrid>
+    </DockPanel>
 </Window>
