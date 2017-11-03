@@ -1,55 +1,31 @@
-﻿using System.Reflection;
-using System.Resources;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Windows;
+﻿#region Using directives
 
-// Управление общими сведениями о сборке осуществляется с помощью 
-// набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
-// связанные со сборкой.
+using System;
+using System.Reflection;
+using System.Runtime.InteropServices;
+
+#endregion
+
+// General Information about an assembly is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
 [assembly: AssemblyTitle("NetChanger")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("NetChanger")]
-[assembly: AssemblyCopyright("Copyright ©  2017")]
+[assembly: AssemblyCopyright("Copyright 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-// Параметр ComVisible со значением FALSE делает типы в сборке невидимыми 
-// для COM-компонентов.  Если требуется обратиться к типу в этой сборке через 
-// COM, задайте атрибуту ComVisible значение TRUE для этого типа.
+// This sets the default COM visibility of types in the assembly to invisible.
+// If you need to expose a type to COM, use [ComVisible(true)] on that type.
 [assembly: ComVisible(false)]
 
-//Чтобы начать сборку локализованных приложений, задайте 
-//<UICulture>CultureYouAreCodingWith</UICulture> в файле .csproj
-//внутри <PropertyGroup>.  Например, если используется английский США
-//в своих исходных файлах установите <UICulture> в en-US.  Затем отмените преобразование в комментарий
-//атрибута NeutralResourceLanguage ниже.  Обновите "en-US" в
-//строка внизу для обеспечения соответствия настройки UICulture в файле проекта.
-
-//[assembly: NeutralResourcesLanguage("en-US", UltimateResourceFallbackLocation.Satellite)]
-
-
-[assembly: ThemeInfo(
-    ResourceDictionaryLocation.None, //где расположены словари ресурсов по конкретным тематикам
-                                     //(используется, если ресурс не найден на странице 
-                                     // или в словарях ресурсов приложения)
-    ResourceDictionaryLocation.SourceAssembly //где расположен словарь универсальных ресурсов
-                                              //(используется, если ресурс не найден на странице, 
-                                              // в приложении или в каких-либо словарях ресурсов для конкретной темы)
-)]
-
-
-// Сведения о версии сборки состоят из следующих четырех значений:
+// The assembly version has following format :
 //
-//      Основной номер версии
-//      Дополнительный номер версии 
-//   Номер сборки
-//      Редакция
+// Major.Minor.Build.Revision
 //
-// Можно задать все значения или принять номера сборки и редакции по умолчанию 
-// используя "*", как показано ниже:
-// [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+// You can specify all the values or you can use the default the Revision and 
+// Build Numbers by using the '*' as shown below:
+[assembly: AssemblyVersion("1.0.*")]

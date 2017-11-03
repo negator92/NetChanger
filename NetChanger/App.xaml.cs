@@ -1,20 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
 using System.Windows;
+using System.Data;
+using System.Xml;
+using System.Configuration;
 
 namespace NetChanger
 {
     /// <summary>
-    /// Логика взаимодействия для App.xaml
+    /// Interaction logic for App.xaml
     /// </summary>
     public partial class App : Application
     {
-        void App_Deactivated(object sender, EventArgs e)
-        {
-            MessageBox.Show("Закрыть забыл");
-        }
     }
 }
