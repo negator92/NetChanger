@@ -5,6 +5,27 @@
         DataContext="{Binding ApplicationViewModel, Source={x:Static Application.Current}}" Background="#EEEEEE"
         Title="Local network changer" Height="300" Width="321" MinHeight="200" MinWidth="200">
     <Window.Resources>
+        <Style TargetType="{x:Type Button}"
+               x:Key="deleteButton">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <TextBlock Text="❌"
+                                   Margin="2"
+                                   Background="Transparent"
+                                   Foreground="{TemplateBinding Foreground}"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Foreground" Value="Black"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver"
+                         Value="True">
+                    <Setter Property="Foreground"
+                            Value="Red"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
         <Style TargetType="{x:Type Button}">
             <Setter Property="Margin" Value="5,0,0,0" />
             <Setter Property="DockPanel.Dock" Value="Right" />
@@ -40,27 +61,56 @@
         <DockPanel Margin="0">
             <DockPanel>
                 <TextBlock Text="IP address" />
-                <TextBox Text="{Binding}" />
+                <TextBox Text="{Binding IP}" />
             </DockPanel>
             <DockPanel>
                 <TextBlock Text="Netmask" />
-                <TextBox Text="{Binding}" />
+                <TextBox Text="{Binding Mask}" />
             </DockPanel>
             <DockPanel>
                 <TextBlock Text="Gateway" />
-                <TextBox Text="{Binding}" />
+                <TextBox Text="{Binding Gateway}" />
             </DockPanel>
             <DockPanel>
                 <TextBlock Text="DNS addresses" />
-                <TextBox Text="{Binding}" />
+                <TextBox Text="{Binding DNS}" />
             </DockPanel>
         </DockPanel>
-        <ListBox ItemsSource="{Binding}" SelectedItem="{Binding}" SelectionMode="Single">
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="MouseDoubleClick">
-                        <i:InvokeCommandAction Command="{Binding}" />
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
+        <ListBox ItemsSource="{Binding i}" SelectedItem="{Binding i}" SelectionMode="Single">
+            <ListBoxItem>
+                <ListBoxItem.InputBindings>
+                    <MouseBinding Command="{Binding EditCommand}" MouseAction="LeftDoubleClick" />
+                </ListBoxItem.InputBindings>
+            </ListBoxItem>
+            <!--<i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseDoubleClick">
+                    <i:InvokeCommandAction Command="{Binding c}" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>-->
+            <ListBox.Template>
+                <ControlTemplate TargetType="{x:Type ListBox}">
+                    <ItemsPresenter />
+                </ControlTemplate>
+            </ListBox.Template>
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ListBoxItem}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                <DockPanel>
+                                    <Button Command="{Binding DataContext.Delete,
+                                            ElementName=pControl}"
+                                            CommandParameter="{Binding}"
+                                            DockPanel.Dock="Right"
+                                            Style="{StaticResource deleteButton}">
+                                    </Button>
+                                    <TextBlock Text="{Binding Path=Name}"/>
+                                </DockPanel>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListBox.ItemContainerStyle>
         </ListBox>
     </DockPanel>
 </Window>
