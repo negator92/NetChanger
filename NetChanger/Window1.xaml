@@ -1,7 +1,6 @@
 <Window x:Class="NetChanger.Window1"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         DataContext="{Binding ApplicationViewModel, Source={x:Static Application.Current}}" Background="#EEEEEE"
         Title="Local network changer" Height="300" Width="321" MinHeight="200" MinWidth="200">
     <Window.Resources>
@@ -29,7 +28,7 @@
         <Style TargetType="{x:Type Button}">
             <Setter Property="Margin" Value="5,0,0,0" />
             <Setter Property="DockPanel.Dock" Value="Right" />
-            <Setter Property="Padding" Value="2" />
+            <Setter Property="Padding" Value="1" />
         </Style>
         <Style TargetType="{x:Type DockPanel}">
             <Setter Property="Margin" Value="5" />
@@ -53,8 +52,8 @@
     <DockPanel Margin="0">
         <DockPanel>
             <TextBlock Text="Name" />
-            <Button>
-                <TextBlock Text="💾" Foreground="Blue" />
+            <Button Command="{Binding SaveSettingsCommand}">
+                <TextBlock Text="💾" FontSize="18" Foreground="Blue" />
             </Button>
             <TextBox Text="{Binding Name}" />
         </DockPanel>
@@ -82,11 +81,6 @@
                     <MouseBinding Command="{Binding EditCommand}" MouseAction="LeftDoubleClick" />
                 </ListBoxItem.InputBindings>
             </ListBoxItem>
-            <!--<i:Interaction.Triggers>
-                <i:EventTrigger EventName="MouseDoubleClick">
-                    <i:InvokeCommandAction Command="{Binding c}" />
-                </i:EventTrigger>
-            </i:Interaction.Triggers>-->
             <ListBox.Template>
                 <ControlTemplate TargetType="{x:Type ListBox}">
                     <ItemsPresenter />
