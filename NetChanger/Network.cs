@@ -8,7 +8,7 @@ namespace NetChanger
     public class Network
     {
         public Network() { }
-        
+
         public string IPaddress { get; set; }
         public string Netmask { get; set; }
         public string Gateway { get; set; }

@@ -52,10 +52,10 @@
     <DockPanel Margin="0">
         <DockPanel>
             <TextBlock Text="Name" />
-            <Button Command="{Binding SaveSettingsCommand}">
-                <TextBlock Text="💾" Height="{Binding ActualHeight, ElementName=textBoxName}" FontSize="16" Foreground="Blue" />
+            <Button Command="{Binding SaveSettingsCommand}" Height="{Binding ActualHeight, ElementName=textBoxName}">
+                <TextBlock Text="💾" FontSize="15" Foreground="Blue" />
             </Button>
-            <TextBox Text="{Binding Name}" Name="textBoxName"/>
+            <TextBox Text="{Binding SettingFile}" Name="textBoxName"/>
         </DockPanel>
         <DockPanel Margin="0">
             <DockPanel>
@@ -75,10 +75,10 @@
                 <TextBox Text="{Binding DNS}" />
             </DockPanel>
         </DockPanel>
-        <ListBox ItemsSource="{Binding i}" SelectedItem="{Binding i}" SelectionMode="Single">
+        <ListBox ItemsSource="{Binding SettingFiles}" SelectedItem="{Binding SettingFile}" SelectionMode="Single">
             <ListBoxItem>
                 <ListBoxItem.InputBindings>
-                    <MouseBinding Command="{Binding EditCommand}" MouseAction="LeftDoubleClick" />
+                    <MouseBinding Command="{Binding RunCommand}" MouseAction="LeftDoubleClick" />
                 </ListBoxItem.InputBindings>
             </ListBoxItem>
             <ListBox.Template>
