@@ -12,7 +12,10 @@ namespace NetChanger
 
         private RelayCommand(Action<object> execute, Func<object, bool> canExecute)
         {
-            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+            if (execute == null)
+                throw new ArgumentNullException(execute.ToString());
+            else
+                _execute = execute;
             _canExecute = canExecute ?? (p => true);
         }
 

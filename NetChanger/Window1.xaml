@@ -53,9 +53,9 @@
         <DockPanel>
             <TextBlock Text="Name" />
             <Button Command="{Binding SaveSettingsCommand}">
-                <TextBlock Text="💾" FontSize="18" Foreground="Blue" />
+                <TextBlock Text="💾" Height="{Binding ActualHeight, ElementName=textBoxName}" FontSize="16" Foreground="Blue" />
             </Button>
-            <TextBox Text="{Binding Name}" />
+            <TextBox Text="{Binding Name}" Name="textBoxName"/>
         </DockPanel>
         <DockPanel Margin="0">
             <DockPanel>
