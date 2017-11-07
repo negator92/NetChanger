@@ -1,5 +1,6 @@
 <Window x:Class="NetChanger.Window1"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         DataContext="{Binding ApplicationViewModel, Source={x:Static Application.Current}}" Background="#EEEEEE"
         Title="Local network changer" Height="300" Width="321" MinHeight="200" MinWidth="200">
@@ -12,16 +13,16 @@
                         <TextBlock Text="❌"
                                    Margin="2"
                                    Background="Transparent"
-                                   Foreground="{TemplateBinding Foreground}"/>
+                                   Foreground="{TemplateBinding Foreground}" />
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Foreground" Value="Black" />
             <Style.Triggers>
                 <Trigger Property="IsMouseOver"
                          Value="True">
                     <Setter Property="Foreground"
-                            Value="Red"/>
+                            Value="Red" />
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -52,59 +53,55 @@
     <DockPanel Margin="0">
         <DockPanel>
             <TextBlock Text="Name" />
-            <Button Command="{Binding SaveSettingsCommand}" Height="{Binding ActualHeight, ElementName=textBoxName}">
+            <Button Command="{Binding SaveSettingCommand}" Height="{Binding ActualHeight, ElementName=textBoxName}">
                 <TextBlock Text="💾" FontSize="15" Foreground="Blue" />
             </Button>
-            <TextBox Text="{Binding SettingFile}" Name="textBoxName"/>
+            <TextBox Text="{Binding FileName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Name="textBoxName" />
         </DockPanel>
         <DockPanel Margin="0">
             <DockPanel>
                 <TextBlock Text="IP address" />
-                <TextBox Text="{Binding IP}" />
+                <TextBox Text="{Binding IP, Mode=TwoWay}" />
             </DockPanel>
             <DockPanel>
                 <TextBlock Text="Netmask" />
-                <TextBox Text="{Binding Mask}" />
+                <TextBox Text="{Binding Mask, Mode=TwoWay}" />
             </DockPanel>
             <DockPanel>
                 <TextBlock Text="Gateway" />
-                <TextBox Text="{Binding Gateway}" />
+                <TextBox Text="{Binding Gateway, Mode=TwoWay}" />
             </DockPanel>
             <DockPanel>
                 <TextBlock Text="DNS addresses" />
-                <TextBox Text="{Binding DNS}" />
+                <TextBox Text="{Binding DNS, Mode=TwoWay}" />
             </DockPanel>
         </DockPanel>
-        <ListBox ItemsSource="{Binding SettingFiles}" SelectedItem="{Binding SettingFile}" SelectionMode="Single">
-            <ListBoxItem>
-                <ListBoxItem.InputBindings>
-                    <MouseBinding Command="{Binding RunCommand}" MouseAction="LeftDoubleClick" />
-                </ListBoxItem.InputBindings>
-            </ListBoxItem>
+        <ListBox ItemsSource="{Binding NetworkArray, Mode=TwoWay}" SelectedItem="{Binding NetworkItem, Mode=TwoWay}"
+                 SelectionMode="Single" ScrollViewer.VerticalScrollBarVisibility="Visible"
+                 HorizontalContentAlignment="Stretch" Background="White" Margin="5" Name="listBox">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseDoubleClick">
+                    <i:InvokeCommandAction Command="{Binding LoadSettingCommand}" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
             <ListBox.Template>
                 <ControlTemplate TargetType="{x:Type ListBox}">
-                    <ItemsPresenter />
+                    <ItemsPresenter  />
                 </ControlTemplate>
             </ListBox.Template>
-            <ListBox.ItemContainerStyle>
-                <Style TargetType="{x:Type ListBoxItem}">
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                                <DockPanel>
-                                    <Button Command="{Binding DataContext.Delete,
-                                            ElementName=pControl}"
-                                            CommandParameter="{Binding}"
-                                            DockPanel.Dock="Right"
-                                            Style="{StaticResource deleteButton}">
-                                    </Button>
-                                    <TextBlock Text="{Binding Path=Name}"/>
-                                </DockPanel>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </ListBox.ItemContainerStyle>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <DockPanel>
+                        <Button Command="{Binding DataContext.DeleteSettingCommand,
+                                          ElementName=listBox}"
+                                CommandParameter="{Binding}" DockPanel.Dock="Right"
+                                Style="{StaticResource deleteButton}">
+                        </Button>
+                        <TextBlock Text="{Binding DataContext.FileName,
+                            ElementName=listBox}"/>
+                    </DockPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
         </ListBox>
     </DockPanel>
 </Window>

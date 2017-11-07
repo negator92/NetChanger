@@ -20,12 +20,35 @@ namespace NetChanger
         internal static string AssemblyLocation { get; } = Assembly.GetExecutingAssembly().Location;
         internal static string ConfigurationsLocation { get; } = $"{Path.GetDirectoryName(AssemblyLocation)}\\NetworkSettings";
         private HashSet<string> settingFilesHashSet;
+        private string fileName;
+        public string FileName
+        {
+            get { return fileName; }
+            set
+            {
+                if (!value.Intersect(Path.GetInvalidFileNameChars()).Any())
+                    fileName = value;
+                OnPropertyChanged();
+            }
+        }
 
-        public ICommand DeleteConfigurationCommand { get; set; }
-        public ICommand RunCommand { get; set; }
-        public ICommand SaveSettingsCommand { get; set; }
-        public string SettingFile { get; set; }
-        public string[] SettingFiles { get; set; }
+        public ICommand DeleteSettingCommand { get; set; }
+        public ICommand LoadSettingCommand { get; set; }
+        public ICommand SaveSettingCommand { get; set; }
+        private Network networkItem;
+        public Network NetworkItem
+        {
+            get
+            {
+                if (networkItem == null)
+                {
+                    IP = Mask = Gateway = DNS = FileName = "";
+                }
+                return networkItem;
+            }
+            set { networkItem = value; }
+        }
+        public Network[] NetworkArray { get; set; }
         public string IP { get; set; }
         public string Mask { get; set; }
         public string Gateway { get; set; }
@@ -58,18 +81,52 @@ namespace NetChanger
             watcher.EnableRaisingEvents = true;
             OnChanged(null, null);
 
-            DeleteConfigurationCommand = new RelayCommand(DeleteSetting, () => !string.IsNullOrEmpty(SettingFile));
-            RunCommand = new RelayCommand(Enable, () => !string.IsNullOrEmpty(SettingFile));
-            SaveSettingsCommand = new RelayCommand(SaveSetting);
+            DeleteSettingCommand = new RelayCommand(DeleteSetting, () => NetworkItem != null);
+            LoadSettingCommand = new RelayCommand(EnableSetting, () => NetworkItem != null);
+            SaveSettingCommand = new RelayCommand(SaveSetting, () => !string.IsNullOrEmpty(FileName));
         }
 
-        private void Enable(object obj)
+        private void EnableSetting(object obj)
         {
+            try
+            {
+                NetworkItem = CreateNetwork();
+                Enable();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+                return;
+            }
         }
 
+        private Network CreateNetwork()
+        {
+            var N = new Network();
+            N.DNSaddresses = DNS;
+            N.Gateway = Gateway;
+            N.IPaddress = IP;
+            N.Netmask = Mask;
+            return N;
+        }
+
+        private void Enable()
+        {
+            MessageBox.Show("Network settings enabled!");
+        }
 
         private void DeleteSetting(object obj)
         {
+            try
+            {
+                File.Delete($"{ConfigurationsLocation}\\{NetworkItem}.ini");
+                OnChanged(null, null);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+                return;
+            }
         }
 
 
@@ -81,23 +138,32 @@ namespace NetChanger
         private void OnChanged(object sender, FileSystemEventArgs e)
         {
             var files = Directory.GetFiles(ConfigurationsLocation, "*.ini");
-            SettingFiles = new string[files.Length];
+            NetworkArray = new Network[files.Length];
             foreach (var f in files)
             {
-                SettingFiles[Array.IndexOf(files, f)] = Path.GetFileNameWithoutExtension(f);
+                var al = File.ReadAllLines(f);
+                IP = al[0];
+                Mask = al[1];
+                Gateway = al[2];
+                DNS = al[3];
+                NetworkItem = CreateNetwork();
+                NetworkArray[Array.IndexOf(files, f)] = NetworkItem;
             }
-            settingFilesHashSet = new HashSet<string>(SettingFiles.Select(f => f.ToLower()));
+            settingFilesHashSet = new HashSet<string>(NetworkArray.Select(f => f.ToString()));
         }
 
-        public void SaveSetting()
+        public void SaveSetting(object obj)
         {
-            Network n = new Network();
-            n.DNSaddresses = DNS;
-            n.Gateway = Gateway;
-            n.IPaddress = IP;
-            n.Netmask = Mask;
-            //ArrayNetwork = new Network[];
-            
+            NetworkItem = CreateNetwork();
+            try
+            {
+                File.WriteAllText($"{ConfigurationsLocation}\\{FileName}.ini", $"{NetworkItem.IPaddress}\n{NetworkItem.Netmask}\n{NetworkItem.Gateway}\n{NetworkItem.DNSaddresses}");
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+                return;
+            }
         }
     }
 }
