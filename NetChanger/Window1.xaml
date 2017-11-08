@@ -61,34 +61,29 @@
         <DockPanel Margin="0">
             <DockPanel>
                 <TextBlock Text="IP address" />
-                <TextBox Text="{Binding IP, Mode=TwoWay}" />
+                <TextBox Text="{Binding IP}" />
             </DockPanel>
             <DockPanel>
                 <TextBlock Text="Netmask" />
-                <TextBox Text="{Binding Mask, Mode=TwoWay}" />
+                <TextBox Text="{Binding Mask}" />
             </DockPanel>
             <DockPanel>
                 <TextBlock Text="Gateway" />
-                <TextBox Text="{Binding Gateway, Mode=TwoWay}" />
+                <TextBox Text="{Binding Gateway}" />
             </DockPanel>
             <DockPanel>
                 <TextBlock Text="DNS addresses" />
-                <TextBox Text="{Binding DNS, Mode=TwoWay}" />
+                <TextBox Text="{Binding DNS}" />
             </DockPanel>
         </DockPanel>
         <ListBox ItemsSource="{Binding NetworkArray, Mode=TwoWay}" SelectedItem="{Binding NetworkItem, Mode=TwoWay}"
-                 SelectionMode="Single" ScrollViewer.VerticalScrollBarVisibility="Visible"
+                 SelectedIndex="{Binding NetworkIndex, Mode=TwoWay}" SelectionMode="Single" ScrollViewer.VerticalScrollBarVisibility="Visible"
                  HorizontalContentAlignment="Stretch" Background="White" Margin="5" Name="listBox">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseDoubleClick">
                     <i:InvokeCommandAction Command="{Binding LoadSettingCommand}" />
                 </i:EventTrigger>
             </i:Interaction.Triggers>
-            <ListBox.Template>
-                <ControlTemplate TargetType="{x:Type ListBox}">
-                    <ItemsPresenter  />
-                </ControlTemplate>
-            </ListBox.Template>
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <DockPanel>
@@ -97,8 +92,7 @@
                                 CommandParameter="{Binding}" DockPanel.Dock="Right"
                                 Style="{StaticResource deleteButton}">
                         </Button>
-                        <TextBlock Text="{Binding DataContext.FileName,
-                            ElementName=listBox}"/>
+                        <TextBlock Text="{Binding Name, Mode=TwoWay}" />
                     </DockPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>

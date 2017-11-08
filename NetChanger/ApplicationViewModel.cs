@@ -19,18 +19,6 @@ namespace NetChanger
     {
         internal static string AssemblyLocation { get; } = Assembly.GetExecutingAssembly().Location;
         internal static string ConfigurationsLocation { get; } = $"{Path.GetDirectoryName(AssemblyLocation)}\\NetworkSettings";
-        private HashSet<string> settingFilesHashSet;
-        private string fileName;
-        public string FileName
-        {
-            get { return fileName; }
-            set
-            {
-                if (!value.Intersect(Path.GetInvalidFileNameChars()).Any())
-                    fileName = value;
-                OnPropertyChanged();
-            }
-        }
 
         public ICommand DeleteSettingCommand { get; set; }
         public ICommand LoadSettingCommand { get; set; }
@@ -48,38 +36,61 @@ namespace NetChanger
             }
             set { networkItem = value; }
         }
+        private int networkIndex;
+        public int NetworkIndex
+        {
+            get => networkIndex;
+            set
+            {
+                if (value < 0)
+                    value = 0;
+                networkIndex = value;
+            }
+        }
         public Network[] NetworkArray { get; set; }
-        public string IP { get; set; }
-        public string Mask { get; set; }
-        public string Gateway { get; set; }
-        public string DNS { get; set; }
+        public string FileName
+        {
+            get => NetworkArray[NetworkIndex].Name;
+            set
+            {
+                if (!value.Intersect(Path.GetInvalidFileNameChars()).Any())
+                    NetworkArray[NetworkIndex].Name = value;
+                OnPropertyChanged();
+            }
+        }
+        public string IP
+        {
+            get => NetworkArray[NetworkIndex].IPaddress;
+            set { NetworkArray[NetworkIndex].IPaddress = value; }
+        }
+        public string Mask
+        {
+            get => NetworkArray[NetworkIndex].Netmask;
+            set { NetworkArray[NetworkIndex].Netmask = value; }
+        }
+        public string Gateway
+        {
+            get => NetworkArray[NetworkIndex].Gateway;
+            set { NetworkArray[NetworkIndex].Gateway = value; }
+        }
+        public string DNS
+        {
+            get => NetworkArray[NetworkIndex].DNSaddresses;
+            set { NetworkArray[NetworkIndex].DNSaddresses = value; }
+        }
 
         public ApplicationViewModel()
         {
             try
             {
                 Directory.CreateDirectory(ConfigurationsLocation);
+                OnChanged(null, null);
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
                 return;
             }
-            var watcher = new FileSystemWatcher(ConfigurationsLocation, "*.ini");
-            watcher.NotifyFilter = NotifyFilters.Attributes |
-                                   NotifyFilters.CreationTime |
-                                   NotifyFilters.DirectoryName |
-                                   NotifyFilters.FileName |
-                                   NotifyFilters.LastAccess |
-                                   NotifyFilters.LastWrite |
-                                   NotifyFilters.Security |
-                                   NotifyFilters.Size;
-            watcher.Changed += new FileSystemEventHandler(OnChanged);
-            watcher.Created += new FileSystemEventHandler(OnChanged);
-            watcher.Deleted += new FileSystemEventHandler(OnChanged);
-            watcher.Renamed += new RenamedEventHandler(OnRenamed);
-            watcher.EnableRaisingEvents = true;
-            OnChanged(null, null);
 
             DeleteSettingCommand = new RelayCommand(DeleteSetting, () => NetworkItem != null);
             LoadSettingCommand = new RelayCommand(EnableSetting, () => NetworkItem != null);
@@ -103,6 +114,7 @@ namespace NetChanger
         private Network CreateNetwork()
         {
             var N = new Network();
+            N.Name = FileName;
             N.DNSaddresses = DNS;
             N.Gateway = Gateway;
             N.IPaddress = IP;
@@ -119,7 +131,7 @@ namespace NetChanger
         {
             try
             {
-                File.Delete($"{ConfigurationsLocation}\\{NetworkItem}.ini");
+                File.Delete($"{ConfigurationsLocation}\\{NetworkItem.Name}.ini");
                 OnChanged(null, null);
             }
             catch (Exception e)
@@ -129,12 +141,6 @@ namespace NetChanger
             }
         }
 
-
-        private void OnRenamed(object sender, RenamedEventArgs e)
-        {
-            OnChanged(sender, null);
-        }
-
         private void OnChanged(object sender, FileSystemEventArgs e)
         {
             var files = Directory.GetFiles(ConfigurationsLocation, "*.ini");
@@ -142,14 +148,14 @@ namespace NetChanger
             foreach (var f in files)
             {
                 var al = File.ReadAllLines(f);
-                IP = al[0];
-                Mask = al[1];
-                Gateway = al[2];
-                DNS = al[3];
-                NetworkItem = CreateNetwork();
+                NetworkItem = new Network();
+                NetworkItem.Name = Path.GetFileNameWithoutExtension(f);
+                NetworkItem.IPaddress = al[0];
+                NetworkItem.Netmask = al[1];
+                NetworkItem.Gateway = al[2];
+                NetworkItem.DNSaddresses = al[3];
                 NetworkArray[Array.IndexOf(files, f)] = NetworkItem;
             }
-            settingFilesHashSet = new HashSet<string>(NetworkArray.Select(f => f.ToString()));
         }
 
         public void SaveSetting(object obj)
@@ -158,12 +164,14 @@ namespace NetChanger
             try
             {
                 File.WriteAllText($"{ConfigurationsLocation}\\{FileName}.ini", $"{NetworkItem.IPaddress}\n{NetworkItem.Netmask}\n{NetworkItem.Gateway}\n{NetworkItem.DNSaddresses}");
+                OnChanged(null, null);
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
                 return;
             }
+            OnChanged(null, null);
         }
     }
 }
