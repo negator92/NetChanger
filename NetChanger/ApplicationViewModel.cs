@@ -5,6 +5,9 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -124,6 +127,14 @@ namespace NetChanger
 
         private void Enable()
         {
+            //SetGateway(NetworkItem.Gateway);
+            System.Diagnostics.Process process = new System.Diagnostics.Process();
+            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+            startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+            startInfo.FileName = "wmic";
+            startInfo.Arguments = $"nicconfig where (IPEnabled=TRUE) call SetDNSServerSearchOrder ({NetworkItem.DNSaddresses.Replace(" ", ", ")})";
+            process.StartInfo = startInfo;
+            process.Start();
             MessageBox.Show("Network settings enabled!");
         }
 
@@ -139,6 +150,7 @@ namespace NetChanger
                 MessageBox.Show(e.Message);
                 return;
             }
+            NetworkIndex = 0;
         }
 
         private void OnChanged(object sender, FileSystemEventArgs e)
@@ -172,6 +184,57 @@ namespace NetChanger
                 return;
             }
             OnChanged(null, null);
+        }
+
+        /*public void SetGateway(string gateway)
+        {
+            ManagementClass objMC = new ManagementClass("Win32_NetworkAdapterConfiguration");
+            ManagementObjectCollection objMOC = objMC.GetInstances();
+
+            foreach (ManagementObject objMO in objMOC)
+            {
+                Debug.WriteLine(objMO["Caption"]);
+                {
+                    try
+                    {
+                        ManagementBaseObject setGateway;
+                        ManagementBaseObject newGateway = objMO.GetMethodParameters("SetGateways");
+
+                        newGateway["DefaultIPGateway"] = new string[] {gateway
+    };
+                        newGateway["GatewayCostMetric"] = new int[] { 1 };
+
+                        setGateway = objMO.InvokeMethod("SetGateways", newGateway, null);
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
+                }
+            }
+        }*/
+
+        public static string GetLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            throw new Exception("Local IP Address Not Found!");
+        }
+
+        public static IPAddress GetDefaultGateway()
+        {
+            return NetworkInterface
+                .GetAllNetworkInterfaces()
+                .Where(n => n.OperationalStatus == OperationalStatus.Up)
+                .SelectMany(n => n.GetIPProperties()?.GatewayAddresses)
+                .Select(g => g?.Address)
+                .FirstOrDefault(a => a != null);
         }
     }
 }
