@@ -1,10 +1,5 @@
-﻿using System;
-
-namespace NetChanger
+﻿namespace NetChanger
 {
-    /// <summary>
-    /// Description of Network.
-    /// </summary>
     public class Network
     {
         public Network() { }

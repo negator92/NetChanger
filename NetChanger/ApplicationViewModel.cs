@@ -1,23 +1,18 @@
-﻿using PropertyChanged;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Management;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
 
 namespace NetChanger
 {
-    /// <summary>
-    /// Description of ApplicationViewModel.
-    /// </summary>
     public class ApplicationViewModel : PropertyChangedClass, INotifyPropertyChanged
     {
         internal static string AssemblyLocation { get; } = Assembly.GetExecutingAssembly().Location;
@@ -26,6 +21,7 @@ namespace NetChanger
         public ICommand DeleteSettingCommand { get; set; }
         public ICommand LoadSettingCommand { get; set; }
         public ICommand SaveSettingCommand { get; set; }
+
         private Network networkItem;
         public Network NetworkItem
         {
@@ -39,6 +35,9 @@ namespace NetChanger
             }
             set { networkItem = value; }
         }
+
+        public Network[] NetworkArray { get; set; }
+
         private int networkIndex;
         public int NetworkIndex
         {
@@ -50,7 +49,7 @@ namespace NetChanger
                 networkIndex = value;
             }
         }
-        public Network[] NetworkArray { get; set; }
+
         public string FileName
         {
             get => NetworkArray[NetworkIndex].Name;
@@ -61,21 +60,25 @@ namespace NetChanger
                 OnPropertyChanged();
             }
         }
+
         public string IP
         {
             get => NetworkArray[NetworkIndex].IPaddress;
             set { NetworkArray[NetworkIndex].IPaddress = value; }
         }
+
         public string Mask
         {
             get => NetworkArray[NetworkIndex].Netmask;
             set { NetworkArray[NetworkIndex].Netmask = value; }
         }
+
         public string Gateway
         {
             get => NetworkArray[NetworkIndex].Gateway;
             set { NetworkArray[NetworkIndex].Gateway = value; }
         }
+
         public string DNS
         {
             get => NetworkArray[NetworkIndex].DNSaddresses;
@@ -127,10 +130,10 @@ namespace NetChanger
 
         private void Enable()
         {
-            //SetGateway(NetworkItem.Gateway);
-            System.Diagnostics.Process process = new System.Diagnostics.Process();
-            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-            startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+            SetGateway(NetworkItem.Gateway);
+            Process process = new Process();
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
             startInfo.FileName = "wmic";
             startInfo.Arguments = $"nicconfig where (IPEnabled=TRUE) call SetDNSServerSearchOrder ({NetworkItem.DNSaddresses.Replace(" ", ", ")})";
             process.StartInfo = startInfo;
@@ -156,17 +159,34 @@ namespace NetChanger
         private void OnChanged(object sender, FileSystemEventArgs e)
         {
             var files = Directory.GetFiles(ConfigurationsLocation, "*.ini");
-            NetworkArray = new Network[files.Length];
-            foreach (var f in files)
+            if (files.Length == 0)
             {
-                var al = File.ReadAllLines(f);
-                NetworkItem = new Network();
-                NetworkItem.Name = Path.GetFileNameWithoutExtension(f);
-                NetworkItem.IPaddress = al[0];
-                NetworkItem.Netmask = al[1];
-                NetworkItem.Gateway = al[2];
-                NetworkItem.DNSaddresses = al[3];
-                NetworkArray[Array.IndexOf(files, f)] = NetworkItem;
+                NetworkArray = new Network[]
+                {
+                    new Network()
+                    {
+                        Name = "TEMP",
+                        IPaddress = GetLocalIPAddress(),
+                        Netmask = "255.255.255.0",
+                        Gateway = GetDefaultGateway().ToString(),
+                        DNSaddresses = GetDefaultGateway().ToString()
+                    }
+                };
+            }
+            else
+            {
+                NetworkArray = new Network[files.Length];
+                foreach (var f in files)
+                {
+                    var al = File.ReadAllLines(f);
+                    NetworkItem = new Network();
+                    NetworkItem.Name = Path.GetFileNameWithoutExtension(f);
+                    NetworkItem.IPaddress = al[0];
+                    NetworkItem.Netmask = al[1];
+                    NetworkItem.Gateway = al[2];
+                    NetworkItem.DNSaddresses = al[3];
+                    NetworkArray[Array.IndexOf(files, f)] = NetworkItem;
+                }
             }
         }
 
@@ -186,7 +206,7 @@ namespace NetChanger
             OnChanged(null, null);
         }
 
-        /*public void SetGateway(string gateway)
+        public void SetGateway(string gateway)
         {
             ManagementClass objMC = new ManagementClass("Win32_NetworkAdapterConfiguration");
             ManagementObjectCollection objMOC = objMC.GetInstances();
@@ -198,10 +218,10 @@ namespace NetChanger
                     try
                     {
                         ManagementBaseObject setGateway;
-                        ManagementBaseObject newGateway = objMO.GetMethodParameters("SetGateways");
+                        ManagementBaseObject newGateway =
+                            objMO.GetMethodParameters("SetGateways");
 
-                        newGateway["DefaultIPGateway"] = new string[] {gateway
-    };
+                        newGateway["DefaultIPGateway"] = new string[] { gateway };
                         newGateway["GatewayCostMetric"] = new int[] { 1 };
 
                         setGateway = objMO.InvokeMethod("SetGateways", newGateway, null);
@@ -212,7 +232,7 @@ namespace NetChanger
                     }
                 }
             }
-        }*/
+        }
 
         public static string GetLocalIPAddress()
         {
