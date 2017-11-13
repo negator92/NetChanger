@@ -172,6 +172,7 @@ namespace NetChanger
                         DNSaddresses = GetDefaultGateway().ToString()
                     }
                 };
+                NetworkItem = NetworkArray[0];
             }
             else
             {
