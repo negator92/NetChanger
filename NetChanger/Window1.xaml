@@ -77,7 +77,8 @@
             </DockPanel>
         </DockPanel>
         <ListBox ItemsSource="{Binding NetworkArray, Mode=TwoWay}" SelectedItem="{Binding NetworkItem, Mode=TwoWay}"
-                 SelectedIndex="{Binding NetworkIndex, Mode=TwoWay}" SelectionMode="Single" ScrollViewer.VerticalScrollBarVisibility="Visible"
+                 SelectedIndex="{Binding NetworkIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                 SelectionMode="Single" ScrollViewer.VerticalScrollBarVisibility="Visible"
                  HorizontalContentAlignment="Stretch" Background="White" Margin="5" Name="listBox">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseDoubleClick">

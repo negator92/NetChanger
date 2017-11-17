@@ -141,11 +141,11 @@ namespace NetChanger
             MessageBox.Show("Network settings enabled!");
         }
 
-        private void DeleteSetting(object obj)
+        private void DeleteSetting(object network)
         {
             try
             {
-                File.Delete($"{ConfigurationsLocation}\\{NetworkItem.Name}.ini");
+                File.Delete($"{ConfigurationsLocation}\\{((Network)network).Name}.ini");
                 OnChanged(null, null);
             }
             catch (Exception e)
